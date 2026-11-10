@@ -5,6 +5,7 @@ export interface PlatformLayoutNavigation {
   brand: { label: string; icon: ReactNode };
   expandIcon: ReactNode;
   collapseIcon: ReactNode;
+  search?: ReactNode;
   render: (isCollapsed: boolean) => ReactNode;
 }
 

@@ -48,7 +48,7 @@ export function PlatformLayout({
       data-compact={collapsed}
       data-panel-open={panelOpen}
     >
-      <aside className={cn.navigation} aria-label={navigation.label ?? 'Продукты'}>
+      <aside className={cn.navigation} aria-label={navigation.label ?? 'Сервисы'}>
         <Surface className={cn.navigationSurface} background={SurfaceBackground.TRANSPARENT1} borderRadius={16}>
           <div className={cn.brand} aria-label={navigation.brand.label}>
             {navigation.brand.icon}
@@ -56,27 +56,31 @@ export function PlatformLayout({
               <Text bold>{navigation.brand.label}</Text>
             </div>
           </div>
-          <nav id={`${id}-navigation`} className={cn.navigationBody} aria-label="Навигация по продуктам">
+          {!collapsed && navigation.search && (
+            <div className={cn.navigationSearch}>{navigation.search}</div>
+          )}
+          <nav id={`${id}-navigation`} className={cn.navigationBody} aria-label="Навигация по сервисам">
             {navigation.render(collapsed)}
           </nav>
-          <div className={cn.navigationActions}>
-            <AccessibleButton
-              form={ButtonForm.RECT}
-              type={ButtonType.TRANSPARENT}
-              iconLeft={collapsed ? navigation.expandIcon : navigation.collapseIcon}
-              accessibleLabel={collapsed ? 'Развернуть навигацию' : 'Свернуть навигацию'}
-              expanded={!collapsed}
-              controls={`${id}-navigation`}
-              onClick={() => setCollapsed((previous) => !previous)}
-            />
-          </div>
         </Surface>
       </aside>
 
       <header className={cn.header}>
         <Flex className={cn.heading} alignItems={FlexAlign.CENTER}
           justifyContent={FlexJustify.SPACE_BETWEEN} flexWrap={FlexWrap.WRAP} gap={16}>
-          <H level={1} isOverflowedTextHidden lineClamp={2}>{title}</H>
+          <Flex className={cn.headingTitle} alignItems={FlexAlign.CENTER}
+            justifyContent={FlexJustify.START} gap={12}>
+            <AccessibleButton
+              form={ButtonForm.RECT}
+              type={ButtonType.SECONDARY}
+              iconLeft={collapsed ? navigation.expandIcon : navigation.collapseIcon}
+              accessibleLabel={collapsed ? 'Развернуть навигацию' : 'Свернуть навигацию'}
+              expanded={!collapsed}
+              controls={`${id}-navigation`}
+              onClick={() => setCollapsed((previous) => !previous)}
+            />
+            <H level={1} isOverflowedTextHidden lineClamp={2}>{title}</H>
+          </Flex>
           {(actions || rightPanel?.trigger) && (
             <Flex alignItems={FlexAlign.CENTER} justifyContent={FlexJustify.END}
               flexWrap={FlexWrap.WRAP} gap={8}>
@@ -108,8 +112,8 @@ export function PlatformLayout({
           aria-labelledby={`${id}-panel-title`} aria-hidden={!panelOpen}
           onKeyDown={onPanelKeyDown}>
           <Surface className={cn.panelSurface} background={SurfaceBackground.FILL1} borderRadius={16}>
-            <div className={cn.panelHeader} id={`${id}-panel-title`}>
-              <H level={3}>{rightPanel.title}</H>
+            <div className={cn.panelHeader}>
+              <div id={`${id}-panel-title`}><H level={3}>{rightPanel.title}</H></div>
               <AccessibleButton
                 form={ButtonForm.RECT}
                 type={ButtonType.TRANSPARENT}

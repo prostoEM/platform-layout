@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import { LayoutDemo } from './LayoutDemo';
+import { services } from './demoServices';
 import { previewIcons } from '../../dev/previewIcons';
 
 const meta = {
@@ -19,7 +20,8 @@ const meta = {
   argTypes: {
     brandIcon: { control: false },
     filterIcon: { control: false },
-    initialProduct: { control: 'select', options: ['spfi', 'profile', 'incidents', 'tasks'] },
+    navigationIcon: { control: false },
+    initialProduct: { control: 'select', options: Object.keys(services) },
   },
   render: (args) => (
     <LayoutDemo key={`${args.initialProduct}-${args.defaultNavigationCollapsed}-${args.defaultRightPanelOpen}`} {...args} />

@@ -9,6 +9,10 @@ export enum IconColorType {
 
 const paths: Record<string, string> = {
   'preview-shield': 'M12 3 4 6v5c0 5 3 8 8 10 5-2 8-5 8-10V6z M9 12l2 2 4-4',
+  'preview-sidebar': 'M4 5h16v14H4z M10 5v14',
+  lock: 'M5 10h14v11H5z M8 10V7a4 4 0 0 1 8 0v3',
+  clock: 'M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18z M12 7v5l3 2',
+  default_file: 'M6 3h8l4 4v14H6z M14 3v5h4 M9 13h6m-6 4h6',
   'preview-filter': 'M4 6h16l-6 7v5l-4 2v-7z',
   calendar: 'M5 5h14v15H5z M5 9h14 M8 3v4 M16 3v4 M8 13h2m4 0h2m-8 3h2',
   user: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 20a8 8 0 0 1 16 0',
