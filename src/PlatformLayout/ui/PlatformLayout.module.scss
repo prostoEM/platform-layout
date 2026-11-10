@@ -1,0 +1,199 @@
+.layout {
+  --platform-gutter: 16px;
+  --platform-rail: 248px;
+  --platform-panel: 328px;
+  --platform-panel-column: 0px;
+  --platform-motion-duration: 220ms;
+  --platform-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: var(--platform-rail) minmax(0, 1fr) var(--platform-panel-column);
+  grid-template-rows: auto minmax(0, 1fr);
+  block-size: var(--platform-layout-height, 100dvh);
+  min-inline-size: 0;
+  padding: var(--platform-gutter);
+  background: var(--BackgroundsDefault);
+  font: var(--font-weight-normal) var(--font-size-14) / var(--line-height-20) SBSansText, sans-serif;
+  transition: grid-template-columns var(--platform-motion-duration) var(--platform-motion-easing);
+
+  &[data-compact='true'] {
+    --platform-rail: 62px;
+  }
+
+  &[data-panel-open='true'] {
+    --platform-panel-column: calc(var(--platform-panel) + var(--platform-gutter));
+  }
+
+  :where(main):focus-visible {
+    outline: 2px solid var(--FocusOutlinePrimary);
+    outline-offset: -2px;
+  }
+}
+
+.navigation {
+  grid-area: 1 / 1 / -1 / 2;
+  min-inline-size: 0;
+  min-block-size: 0;
+}
+
+.navigationSurface {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+
+  &:has(.navigationSearch) { grid-template-rows: auto auto minmax(0, 1fr); }
+  box-sizing: border-box;
+  block-size: 100%;
+  min-inline-size: 0;
+  padding: 14px 10px 10px;
+  gap: 12px;
+  border-color: rgb(209 224 249 / 9%);
+  background-image: radial-gradient(ellipse 240px 250px at 0 0, rgb(77 112 172 / 12%), transparent);
+  background-color: rgb(20 23 28 / 56%);
+  backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px rgb(233 241 255 / 3%);
+  overflow: clip;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-block-size: 40px;
+  padding-inline: 4px;
+  color: var(--TextAndIconsPrimary);
+}
+
+.brandIcon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: 32px;
+  block-size: 32px;
+  border: 1px solid rgb(145 174 233 / 14%);
+  border-radius: 9px;
+  color: #bccdea;
+  background: rgb(98 132 193 / 12%);
+}
+
+.brandIcon > svg { inline-size: 18px; block-size: 18px; }
+
+.brandLabel {
+  min-inline-size: 140px;
+  max-inline-size: 146px;
+
+  > * {
+    font-size: var(--font-size-14);
+    line-height: 1.2;
+  }
+  opacity: 1;
+  transition: opacity var(--platform-motion-duration) var(--platform-motion-easing);
+}
+
+.layout[data-compact='true'] {
+  .brand { padding-inline: 7px; }
+  .brandLabel { opacity: 0; }
+}
+
+.navigationSearch {
+  min-inline-size: 0;
+  padding-inline: 2px;
+
+  input {
+    background-color: rgb(220 232 255 / 5%);
+    border-radius: 7px;
+  }
+}
+
+.layout[data-compact='true'] .navigationSurface {
+  grid-template-rows: auto minmax(0, 1fr);
+  padding-inline: 6px;
+}
+
+.headingTitle > button { flex: none; }
+
+.header {
+  grid-area: 1 / 2 / 2 / -1;
+  min-inline-size: 0;
+  padding: 0 0 var(--platform-gutter) var(--platform-gutter);
+}
+
+.heading > :first-child {
+  flex: 1 1 12rem;
+  min-inline-size: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-block-start: 8px;
+}
+
+.navigationBody,
+.content,
+.panelBody {
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  overflow-wrap: anywhere;
+}
+
+.navigationBody { overflow-x: hidden; }
+
+.content {
+  grid-area: 2 / 2 / 3 / 3;
+  margin-inline-start: var(--platform-gutter);
+}
+
+.rightPanel {
+  grid-area: 2 / 3 / 3 / 4;
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow: clip;
+  visibility: hidden;
+  transition: visibility 0s var(--platform-motion-duration);
+}
+
+.panelSurface {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  inline-size: var(--platform-panel);
+  block-size: 100%;
+  margin-inline-start: var(--platform-gutter);
+  padding: 16px 0 0;
+  opacity: 0;
+  translate: 12px 0;
+  transition:
+    opacity var(--platform-motion-duration) var(--platform-motion-easing),
+    translate var(--platform-motion-duration) var(--platform-motion-easing);
+}
+
+.layout[data-panel-open='true'] {
+  .rightPanel {
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .panelSurface {
+    opacity: 1;
+    translate: 0;
+  }
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layout { --platform-motion-duration: 0ms; }
+}

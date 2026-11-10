@@ -1,0 +1,28 @@
+@use '@frontend/styles' as kit;
+@use '@frontend/styles/fonts';
+@use '@frontend/styles/tokens/focus' as focus;
+
+:root {
+  color-scheme: dark;
+  --controlSSize: 32px;
+  --controlMSize: 40px;
+  @include kit.applyColorPalette();
+  @include kit.applyFontSize();
+  @include kit.extractTokens(kit.$themeNight, kit.$BACKGROUND_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$SURFACE_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$TEXT_AND_ICONS_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$OUTLINE_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, focus.$FOCUS_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$BUTTON_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$OTHER_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$CALENDAR_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$SHADOW_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$POPUP_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$TAG_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$DEPRECATED_TOKENS);
+}
+
+body {
+  margin: 0;
+  background: var(--BackgroundsDefault);
+}

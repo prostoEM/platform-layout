@@ -1,0 +1,32 @@
+import type { ReactNode } from 'react';
+
+export interface PlatformLayoutNavigation {
+  label?: string;
+  brand: { label: string; icon: ReactNode };
+  expandIcon: ReactNode;
+  collapseIcon: ReactNode;
+  search?: ReactNode;
+  render: (isCollapsed: boolean) => ReactNode;
+}
+
+export interface PlatformLayoutPanel {
+  title: string;
+  trigger?: { label: string; icon?: ReactNode; placement?: 'header' | 'toolbar' };
+  closeIcon: ReactNode;
+  content: ReactNode;
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+}
+
+export interface PlatformLayoutProps {
+  title: string;
+  breadcrumb?: ReactNode;
+  actions?: ReactNode;
+  toolbar?: ReactNode;
+  children: ReactNode;
+  navigation: PlatformLayoutNavigation;
+  rightPanel?: PlatformLayoutPanel;
+  defaultNavigationCollapsed?: boolean;
+  className?: string;
+  dataTestId?: string;
+}
