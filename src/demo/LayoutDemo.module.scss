@@ -1,0 +1,68 @@
+.demo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-inline-end: 4px;
+  color: var(--TextAndIconsSecondary);
+  font-size: 11px;
+
+  &::before {
+    content: '';
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: 50%;
+    background: var(--TextAndIconsAccentSber);
+  }
+}
+
+.demo + .action {
+  min-block-size: 32px;
+  padding: 4px 8px;
+  border: 1px solid var(--OutlineDefault);
+  border-radius: 6px;
+  background: var(--ButtonSecondary);
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--ButtonSecondaryHover);
+  }
+}
+
+.placeholder {
+  box-sizing: border-box;
+  display: grid;
+  place-content: center;
+  gap: 4px;
+  padding: 12px;
+  border: 1px dashed var(--OutlineDefault);
+  border-radius: 8px;
+  text-align: center;
+  background: var(--SurfaceTransparent01);
+
+  span {
+    color: var(--TextAndIconsSecondary);
+    font-size: 12px;
+  }
+}
+
+.left,
+.panel {
+  min-block-size: 118px;
+}
+
+.center {
+  min-block-size: 100%;
+
+  strong {
+    font-size: 16px;
+  }
+}
+
+.stress {
+  margin-block-start: 12px;
+  inline-size: 1200px;
+  block-size: 920px;
+}

@@ -1,0 +1,20 @@
+@use '@frontend/styles' as kit;
+@use '@frontend/styles/fonts';
+@use '@frontend/styles/tokens/focus' as focus;
+
+:root {
+  color-scheme: dark;
+  @include kit.applyColorPalette();
+  @include kit.applyFontSize();
+  @include kit.extractTokens(kit.$themeNight, kit.$BACKGROUND_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$SURFACE_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$TEXT_AND_ICONS_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$OUTLINE_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, focus.$FOCUS_TOKENS);
+  @include kit.extractTokens(kit.$themeNight, kit.$BUTTON_TOKENS);
+}
+
+body {
+  margin: 0;
+  background: var(--BackgroundsDefault);
+}

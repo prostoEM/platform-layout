@@ -1,0 +1,178 @@
+.layout {
+  --_platform-gutter: clamp(16px, 1.5vw, 26px);
+  --_platform-rail: var(--platform-navigation-width, 228px);
+  --_platform-panel: var(--platform-panel-width, 300px);
+
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: var(--_platform-rail) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  block-size: var(--platform-layout-height, 100dvh);
+  max-inline-size: 2048px;
+  min-inline-size: 0;
+  margin-inline: auto;
+  background: var(--BackgroundsDefault);
+  color: var(--TextAndIconsPrimary);
+  font: var(--font-weight-normal) var(--font-size-14) / var(--line-height-20) SBSansText, sans-serif;
+
+  &[data-compact='true'] {
+    --_platform-rail: var(--platform-compact-width, 62px);
+  }
+
+  &[data-panel-open='true'] {
+    grid-template-columns: var(--_platform-rail) minmax(0, 1fr) var(--_platform-panel);
+  }
+
+  :where(button, [tabindex]):focus-visible {
+    outline: 2px solid var(--FocusOutlinePrimary);
+    outline-offset: -2px;
+  }
+}
+
+.navigation {
+  grid-area: 1 / 1 / -1 / 2;
+  min-inline-size: 0;
+  min-block-size: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 8px;
+  padding: 15px 9px 10px;
+  background: var(--SurfaceTransparent01);
+  border-inline-end: 1px solid var(--OutlineDefault);
+}
+
+.brand {
+  align-content: center;
+  min-block-size: 36px;
+  max-inline-size: 110px;
+  padding-inline: 4px;
+  color: var(--TextAndIconsPrimary);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-16);
+  overflow-wrap: anywhere;
+
+  abbr {
+    text-decoration: none;
+  }
+}
+
+.layout .control {
+  min-block-size: 32px;
+  min-inline-size: 32px;
+  max-inline-size: 100%;
+  justify-self: start;
+  align-items: center;
+  padding: 4px 8px;
+  border: 1px solid var(--OutlineDefault);
+  border-radius: 6px;
+  background: var(--ButtonSecondary);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-16);
+
+  &:hover,
+  &[aria-expanded='true'] {
+    background: var(--ButtonSecondaryHover);
+  }
+}
+
+.layout[data-compact='true'] .navigation {
+  padding-inline: 6px;
+
+  .brand,
+  .control {
+    justify-self: center;
+  }
+
+  .control {
+    padding-inline: 4px;
+  }
+}
+
+.header {
+  grid-area: 1 / 2 / 2 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  min-inline-size: 0;
+  gap: 8px 16px;
+  padding: 15px var(--_platform-gutter) 13px;
+
+  h1 {
+    flex: 1 1 12rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    min-inline-size: 0;
+    margin: 0;
+    overflow: hidden;
+    font: var(--font-weight-semibold) var(--font-size-24) / var(--line-height-28) SBSansDisplay, sans-serif;
+    letter-spacing: var(--letter-spacing--5);
+    overflow-wrap: anywhere;
+  }
+}
+
+.actions {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  margin-inline-start: auto;
+}
+
+.navigationBody,
+.content,
+.panelBody {
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  overflow-wrap: anywhere;
+}
+
+.content {
+  grid-area: 2 / 2 / 3 / 3;
+  padding: 2px var(--_platform-gutter) 22px;
+}
+
+.rightPanel {
+  box-sizing: border-box;
+  grid-area: 2 / 3 / 3 / 4;
+  min-inline-size: 0;
+  min-block-size: 0;
+  margin: 2px var(--_platform-gutter) 22px 0;
+  border: 1px solid var(--OutlineDefault);
+  border-radius: 8px;
+  background: var(--SurfaceTransparent01);
+
+  &:not([hidden]) {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px;
+  border-block-end: 1px solid var(--OutlineDefault);
+
+  h2 {
+    margin: 5px 0 0;
+    font: inherit;
+    font-weight: var(--font-weight-semibold);
+    overflow-wrap: anywhere;
+    min-inline-size: 0;
+  }
+
+  button {
+    flex: none;
+  }
+}
+
+.panelBody {
+  padding: 10px;
+}

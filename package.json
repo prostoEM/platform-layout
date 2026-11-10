@@ -1,0 +1,35 @@
+{
+  "name": "platform-layout",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "storybook": "storybook dev -p 6006 --disable-telemetry",
+    "build:storybook": "storybook build --disable-telemetry --output-dir storybook-static && npm run build:preview && node --input-type=module -e \"import { copyFileSync } from 'node:fs'; copyFileSync('preview-static/index.html', 'storybook-static/layout-preview.html')\"",
+    "build:preview": "vite build --config vite.preview.config.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src dev .storybook vite.preview.config.ts"
+  },
+  "dependencies": {
+    "classnames": "^2.5.1",
+    "date-fns": "^4.4.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/react-vite": "^8.6.14",
+    "@types/node": "^22.20.5",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "sass": "^1.108.1",
+    "storybook": "^8.6.14",
+    "typescript": "5.8",
+    "typescript-eslint": "^8.72.2",
+    "vite": "^5.4.21",
+    "vite-plugin-singlefile": "^2.3.4"
+  }
+}
