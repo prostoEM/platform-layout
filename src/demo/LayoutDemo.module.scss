@@ -201,8 +201,11 @@
   border-collapse: collapse;
   text-align: start;
 
-  th:first-child { inline-size: 53%; }
-  th:nth-child(2) { inline-size: 27%; }
+  th:first-child { inline-size: 49%; }
+  th:nth-child(2) { inline-size: 31%; }
+
+  th:not(:first-child), td:last-child { white-space: nowrap; }
+  td:last-child > * { font-size: var(--font-size-12); }
 
   :is(th, td) {
     overflow-wrap: anywhere;
