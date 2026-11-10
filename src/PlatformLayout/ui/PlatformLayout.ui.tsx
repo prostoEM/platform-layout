@@ -64,9 +64,9 @@ export function PlatformLayout({
       data-panel-open={panelOpen}
     >
       <aside className={cn.navigation} aria-label={navigation.label ?? 'Сервисы'}>
-        <Surface className={cn.navigationSurface} background={SurfaceBackground.TRANSPARENT1} borderRadius={16}>
+        <Surface className={cn.navigationSurface} background={SurfaceBackground.EMPTY} borderRadius={12}>
           <div className={cn.brand} aria-label={navigation.brand.label}>
-            {navigation.brand.icon}
+            <span className={cn.brandIcon} aria-hidden="true">{navigation.brand.icon}</span>
             <div className={cn.brandLabel} aria-hidden={collapsed}>
               <Text bold>{navigation.brand.label}</Text>
             </div>
