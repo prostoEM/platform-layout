@@ -37,8 +37,8 @@ export const Collapsed: Story = {
   args: { defaultNavigationCollapsed: true },
 };
 export const Filters: Story = {
-  name: 'Инциденты · открытые фильтры',
-  args: { initialProduct: 'incidents', defaultRightPanelOpen: true },
+  name: 'СПФИ · открытые фильтры',
+  args: { initialProduct: 'spfi', defaultRightPanelOpen: true },
 };
 export const NoPanel: Story = {
   name: 'Профиль · без фильтров',

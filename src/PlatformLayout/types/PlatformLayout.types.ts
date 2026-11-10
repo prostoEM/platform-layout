@@ -11,7 +11,7 @@ export interface PlatformLayoutNavigation {
 
 export interface PlatformLayoutPanel {
   title: string;
-  trigger?: { label: string; icon?: ReactNode };
+  trigger?: { label: string; icon?: ReactNode; placement?: 'header' | 'toolbar' };
   closeIcon: ReactNode;
   content: ReactNode;
   isOpen: boolean;
@@ -20,6 +20,7 @@ export interface PlatformLayoutPanel {
 
 export interface PlatformLayoutProps {
   title: string;
+  breadcrumb?: ReactNode;
   actions?: ReactNode;
   toolbar?: ReactNode;
   children: ReactNode;

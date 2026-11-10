@@ -1,122 +1,129 @@
 import { useRef, useState } from 'react';
-
+import type { KeyboardEvent } from 'react';
 import { Icon } from '@frontend/icon';
 import {
-  ButtonForm, ButtonType, Flex, FlexAlign, FlexJustify, FlexWrap, H,
-  Surface, SurfaceBackground, Tag, TagColor, TagSize, TagType, Text, TypographyType,
+  Button, ButtonType, Flex, FlexAlign, FlexJustify, FlexWrap, H,
+  Surface, SurfaceBackground, Tag, TagColor, TagSize, Text, TypographyType,
 } from '@frontend/ui-kit';
 
 import { AccessibleButton } from '../PlatformLayout/ui/AccessibleButton.ui';
+import { DemoRecordDetail, RecordRisk, RecordStatus } from './DemoRecordDetail';
+import type { DetailTab } from './DemoRecordDetail';
 import type { DemoFilterValues } from './DemoFilters';
+import { dateFormat, normalize, records } from './spfiDemoData';
+import type { Status } from './spfiDemoData';
 import cn from './LayoutDemo.module.scss';
 
-const statuses = {
-  new: { label: 'Новая', type: TagType.DEFAULT },
-  active: { label: 'В работе', type: TagType.PRIMARY },
-  done: { label: 'Завершена', type: TagType.SUCCESS },
-} as const;
-
-const categories = { planned: 'Плановая', incoming: 'Входящая' } as const;
-
-interface RegistryEntry {
-  id: string;
-  title: string;
-  status: keyof typeof statuses;
-  category: keyof typeof categories;
-  updated: Date;
-  description: string;
+interface RegistryProps {
+  filters: DemoFilterValues;
+  search: string;
+  status: Status | 'all';
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
+  onReset: () => void;
 }
 
-const entries: readonly RegistryEntry[] = [
-  { id: '0241', title: 'Плановая проверка подразделения', status: 'active', category: 'planned', updated: new Date(2026, 10, 10), description: 'Собираем материалы для плановой проверки. Следующий шаг — сверить комплект документов и зафиксировать результаты.' },
-  { id: '0240', title: 'Проверка по обращению', status: 'new', category: 'incoming', updated: new Date(2026, 10, 9), description: 'Заявка поступила на первичную проверку.' },
-  { id: '0239', title: 'Дополнительная сверка данных', status: 'active', category: 'incoming', updated: new Date(2026, 10, 9), description: 'Часть данных требует дополнительного подтверждения.' },
-  { id: '0238', title: 'Проверка материалов', status: 'done', category: 'planned', updated: new Date(2026, 10, 6), description: 'Проверка завершена, материалы переданы в архив.' },
-  { id: '0237', title: 'Контроль изменений', status: 'new', category: 'planned', updated: new Date(2026, 10, 5), description: 'Требуется сверить изменения за отчётный период.' },
-  { id: '0236', title: 'Проверка по запросу', status: 'done', category: 'incoming', updated: new Date(2026, 10, 4), description: 'Результаты проверки зафиксированы в карточке.' },
-];
-
-const dateFormat = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-
-export function DemoRegistry({ filters }: { filters: DemoFilterValues }) {
-  const [selectedId, setSelectedId] = useState<string | null>(entries[0].id);
+export function DemoRegistry({ filters, search, status, selectedId, onSelect, onReset }: RegistryProps) {
+  const [tabs, setTabs] = useState<Record<string, DetailTab>>({});
+  const [minimized, setMinimized] = useState<string[]>([]);
   const selectedButton = useRef<HTMLButtonElement | null>(null);
-  const query = filters.query.trim().toLocaleLowerCase('ru');
-  const visible = entries.filter((entry) => (
-    (!query || `${entry.id} ${entry.title}`.toLocaleLowerCase('ru').includes(query))
-    && (!filters.status || filters.status === entry.status)
-    && (!filters.category || filters.category === entry.category)
-    && (!filters.activeOnly || entry.status !== 'done')
-    && (!filters.period.dateFrom || entry.updated >= filters.period.dateFrom)
-    && (!filters.period.dateTo || entry.updated <= filters.period.dateTo)
+  const query = normalize(search);
+  const visible = records.filter((entry) => (
+    (!query || normalize(`${entry.id} ${entry.name}`).includes(query))
+    && (status === 'all' || status === entry.status)
+    && (!filters.applicant.length || filters.applicant.includes(entry.applicant))
+    && (!filters.risk.length || filters.risk.includes(entry.risk))
+    && (!filters.office.length || filters.office.includes(entry.office))
+    && (!filters.examiner || filters.examiner === entry.examiner)
+    && (!filters.period.dateFrom || (entry.date && entry.date >= filters.period.dateFrom))
+    && (!filters.period.dateTo || (entry.date && entry.date <= filters.period.dateTo))
   ));
-  const selected = visible.find((entry) => entry.id === selectedId);
+  const selected = records.find((entry) => entry.id === selectedId);
+  const index = visible.findIndex((entry) => entry.id === selectedId);
+
+  function select(id: string) {
+    setMinimized((previous) => previous.filter((value) => value !== id));
+    onSelect(id);
+  }
+
+  function close() {
+    selectedButton.current?.focus();
+    onSelect(null);
+  }
+
+  function onListKeyDown(event: KeyboardEvent<HTMLElement>) {
+    if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
+    const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button[aria-expanded]'));
+    const current = buttons.indexOf(event.target as HTMLButtonElement);
+    if (current < 0) return;
+
+    event.preventDefault();
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1
+      : current + (event.key === 'ArrowDown' ? 1 : -1);
+    buttons[next]?.focus();
+  }
 
   return (
     <div className={cn.registry}>
+      {minimized.length > 0 && (
+        <Flex className={cn.minimized} justifyContent={FlexJustify.START} flexWrap={FlexWrap.WRAP} gap={8}>
+          <Text type={TypographyType.SECONDARY}>Свёрнутые</Text>
+          {records.filter((entry) => minimized.includes(entry.id)).map((entry) => (
+            <Flex key={entry.id} gap={4}>
+              <Button type={ButtonType.SECONDARY} onClick={() => select(entry.id)}>{entry.name}</Button>
+              <AccessibleButton type={ButtonType.TRANSPARENT}
+                iconLeft={<Icon iconName="ic_18_close_medium" />} accessibleLabel={`Закрыть вкладку ${entry.name}`}
+                onClick={() => setMinimized((previous) => previous.filter((id) => id !== entry.id))} />
+            </Flex>
+          ))}
+        </Flex>
+      )}
       <div className={cn.registryGrid} data-detail-open={Boolean(selected)}>
-        <section className={cn.entryList} aria-label="Карточки реестра">
+        <section className={cn.entryList} aria-label="Карточки реестра" onKeyDown={onListKeyDown}>
           <Flex alignItems={FlexAlign.CENTER} justifyContent={FlexJustify.SPACE_BETWEEN} gap={8}>
-            <H level={4}>Карточки</H>
+            <H level={4}>Заявки</H>
             <Text type={TypographyType.SECONDARY} dataTestId="entry-count">{visible.length}</Text>
           </Flex>
-          {visible.length === 0 && <Text type={TypographyType.SECONDARY}>Карточки не найдены</Text>}
+          {visible.length === 0 && (
+            <Flex justifyContent={FlexJustify.START} flexWrap={FlexWrap.WRAP} gap={8}>
+              <Text type={TypographyType.SECONDARY}>Заявки не найдены</Text>
+              <Button type={ButtonType.TRANSPARENT} onClick={onReset}>Очистить поиск и фильтры</Button>
+            </Flex>
+          )}
           {visible.map((entry) => (
             <Surface key={entry.id} className={cn.entry} borderRadius={12} background={SurfaceBackground.TRANSPARENT1}
               data-selected={selected?.id === entry.id}>
-              <AccessibleButton
-                type={ButtonType.TRANSPARENT}
-                accessibleLabel={`Открыть карточку ${entry.id}: ${entry.title}`}
+              <AccessibleButton type={ButtonType.TRANSPARENT}
+                accessibleLabel={`Открыть заявку ${entry.name}, ${entry.id}`}
                 expanded={selected?.id === entry.id}
                 buttonRef={selected?.id === entry.id ? selectedButton : undefined}
                 iconRight={<Icon iconName="ic_18_chevron_right" />}
-                onClick={() => setSelectedId(entry.id)}
-                isFullWidth
-              >
-                <span className={cn.entryTitle}>{entry.title}</span>
+                onClick={() => select(entry.id)} isFullWidth>
+                <span className={cn.entryTitle}>{entry.name}</span>
               </AccessibleButton>
-              <div className={cn.entryMeta}>
-                <Text type={TypographyType.SECONDARY}>№ {entry.id}</Text>
-                <Tag size={TagSize.S} color={TagColor.CALM} type={statuses[entry.status].type}>
-                  {statuses[entry.status].label}
-                </Tag>
+              <div className={cn.entryFacts}>
+                <Flex justifyContent={FlexJustify.START} flexWrap={FlexWrap.WRAP} gap={4}>
+                  <RecordStatus entry={entry} />
+                  <RecordRisk entry={entry} />
+                  <Tag color={TagColor.CALM} size={TagSize.S}>{entry.applicant}</Tag>
+                </Flex>
+                {entry.date && <Text type={TypographyType.SECONDARY}>{dateFormat.format(entry.date)} · {entry.time} · {entry.office}</Text>}
+                <Text type={TypographyType.SECONDARY}>{entry.id}</Text>
               </div>
             </Surface>
           ))}
         </section>
         {selected && (
-          <Surface className={cn.detail} background={SurfaceBackground.FILL1} borderRadius={16}>
-            <article aria-label="Открытая карточка" className={cn.detailBody}>
-              <Flex justifyContent={FlexJustify.SPACE_BETWEEN} alignItems={FlexAlign.CENTER} gap={8}>
-                <Text type={TypographyType.SECONDARY}>Карточка № {selected.id}</Text>
-                <AccessibleButton
-                  type={ButtonType.TRANSPARENT}
-                  form={ButtonForm.RECT}
-                  iconLeft={<Icon iconName="ic_18_close_medium" />}
-                  accessibleLabel="Закрыть карточку"
-                  onClick={() => {
-                    selectedButton.current?.focus();
-                    setSelectedId(null);
-                  }}
-                />
-              </Flex>
-              <H level={2}>{selected.title}</H>
-              <Flex justifyContent={FlexJustify.START} flexWrap={FlexWrap.WRAP} gap={8}>
-                <Tag size={TagSize.S} color={TagColor.CALM} type={statuses[selected.status].type}>
-                  {statuses[selected.status].label}
-                </Tag>
-                <Tag size={TagSize.S} color={TagColor.CALM}>{categories[selected.category]}</Tag>
-              </Flex>
-              <section className={cn.detailSection} aria-label="О проверке">
-                <H level={4}>О проверке</H>
-                <Text type={TypographyType.SECONDARY}>{selected.description}</Text>
-              </section>
-              <section className={cn.detailSection} aria-label="Обновление">
-                <Text type={TypographyType.SECONDARY}>Последнее обновление</Text>
-                <Text>{dateFormat.format(selected.updated)}</Text>
-              </section>
-            </article>
-          </Surface>
+          <DemoRecordDetail
+            entry={selected}
+            tab={tabs[selected.id] ?? 'study'}
+            onTab={(tab) => setTabs((previous) => ({ ...previous, [selected.id]: tab }))}
+            position={index < 0 ? 'Вне фильтра' : `${index + 1} / ${visible.length}`}
+            onPrevious={index > 0 ? () => select(visible[index - 1].id) : undefined}
+            onNext={index >= 0 && index < visible.length - 1 ? () => select(visible[index + 1].id) : undefined}
+            onMinimize={() => { setMinimized((previous) => [...previous, selected.id]); close(); }}
+            onClose={close}
+          />
         )}
       </div>
     </div>

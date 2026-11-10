@@ -12,6 +12,7 @@ import cn from './PlatformLayout.module.scss';
 
 export function PlatformLayout({
   title,
+  breadcrumb,
   actions,
   toolbar,
   children,
@@ -40,6 +41,20 @@ export function PlatformLayout({
       closePanel();
     }
   }
+
+  const trigger = rightPanel?.trigger && (
+    <AccessibleButton
+      buttonRef={panelTrigger}
+      type={rightPanel.trigger.placement === 'toolbar' && !panelOpen ? ButtonType.TRANSPARENT : ButtonType.SECONDARY}
+      iconLeft={rightPanel.trigger.icon}
+      expanded={panelOpen}
+      controls={`${id}-panel`}
+      onClick={() => rightPanel.onOpenChange(!panelOpen)}
+    >
+      {rightPanel.trigger.label}
+    </AccessibleButton>
+  );
+  const triggerInToolbar = rightPanel?.trigger?.placement === 'toolbar';
 
   return (
     <div
@@ -79,28 +94,22 @@ export function PlatformLayout({
               controls={`${id}-navigation`}
               onClick={() => setCollapsed((previous) => !previous)}
             />
-            <H level={1} isOverflowedTextHidden lineClamp={2}>{title}</H>
+            {breadcrumb ?? <H level={1} isOverflowedTextHidden lineClamp={2}>{title}</H>}
           </Flex>
-          {(actions || rightPanel?.trigger) && (
+          {(actions || (trigger && !triggerInToolbar)) && (
             <Flex alignItems={FlexAlign.CENTER} justifyContent={FlexJustify.END}
               flexWrap={FlexWrap.WRAP} gap={8}>
               {actions}
-              {rightPanel?.trigger && (
-                <AccessibleButton
-                  buttonRef={panelTrigger}
-                  type={ButtonType.SECONDARY}
-                  iconLeft={rightPanel.trigger.icon}
-                  expanded={panelOpen}
-                  controls={`${id}-panel`}
-                  onClick={() => rightPanel.onOpenChange(!panelOpen)}
-                >
-                  {rightPanel.trigger.label}
-                </AccessibleButton>
-              )}
+              {!triggerInToolbar && trigger}
             </Flex>
           )}
         </Flex>
-        {toolbar && <div className={cn.toolbar}>{toolbar}</div>}
+        {(toolbar || (trigger && triggerInToolbar)) && (
+          <div className={cn.toolbar}>
+            {toolbar}
+            {triggerInToolbar && trigger}
+          </div>
+        )}
       </header>
 
       <main className={cn.content} tabIndex={0} aria-label="Область продукта">

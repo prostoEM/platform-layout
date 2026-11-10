@@ -1,5 +1,5 @@
 import { Icon } from '@frontend/icon';
-import { ButtonType, Text, TypographyType } from '@frontend/ui-kit';
+import { ButtonType, Text, TextSize, TypographyType } from '@frontend/ui-kit';
 
 import { AccessibleButton } from '../PlatformLayout/ui/AccessibleButton.ui';
 import { favoriteServices, otherServices, services } from './demoServices';
@@ -8,7 +8,7 @@ import cn from './LayoutDemo.module.scss';
 
 interface DemoServiceNavigationProps {
   collapsed: boolean;
-  selected: ServiceId;
+  selected?: ServiceId;
   query: string;
   onSelect: (id: ServiceId) => void;
 }
@@ -29,7 +29,7 @@ export function DemoServiceNavigation({ collapsed, selected, query, onSelect }: 
       {groups.length === 0 && <Text type={TypographyType.SECONDARY}>Сервисы не найдены</Text>}
       {groups.map(({ label, entries }) => (
         <section key={label} aria-label={label} className={cn.serviceGroup}>
-          {!collapsed && <Text type={TypographyType.SECONDARY} bold>{label}</Text>}
+          {!collapsed && <Text size={TextSize.S} type={TypographyType.SECONDARY} bold>{label}</Text>}
           {entries.map((id) => (
             <AccessibleButton
               key={id}
@@ -40,7 +40,12 @@ export function DemoServiceNavigation({ collapsed, selected, query, onSelect }: 
               onClick={() => onSelect(id)}
               isFullWidth
             >
-              <span className={cn.menuLabel}>{services[id].label}</span>
+              <span className={cn.serviceTitle}>
+                <span className={cn.menuLabel}>{services[id].label}</span>
+                {!collapsed && favoriteServices.includes(id) && (
+                  <span className={cn.favoriteStar}><Icon iconName="ic_18_star" width={14} height={14} /></span>
+                )}
+              </span>
             </AccessibleButton>
           ))}
         </section>

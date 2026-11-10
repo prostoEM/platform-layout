@@ -1,43 +1,34 @@
 import { useState } from 'react';
 
 import {
-  Button, ButtonNativeType, ButtonType, Checkbox, DatepickerInterval, Flex,
-  FlexDirection, FlexAlign, FlexJustify, Select, TextInput, TextInputSize,
+  Button, ButtonNativeType, ButtonType, DatepickerInterval, Flex,
+  FlexDirection, FlexAlign, FlexJustify, Select, SelectMode, TextInputSize,
 } from '@frontend/ui-kit';
 import type { DatepickerDateInterval } from '@frontend/ui-kit';
 
+import { examiners, offices, riskLabels } from './spfiDemoData';
 import cn from './LayoutDemo.module.scss';
 
 export interface DemoFilterValues {
-  query: string;
-  status: string;
-  category: string;
+  risk: string[];
+  applicant: string[];
+  office: string[];
+  examiner: string;
   period: DatepickerDateInterval;
-  activeOnly: boolean;
 }
 
 export const emptyFilters: DemoFilterValues = {
-  query: '',
-  status: '',
-  category: '',
-  period: { dateFrom: null, dateTo: null },
-  activeOnly: false,
+  risk: [], applicant: [], office: [], examiner: '', period: { dateFrom: null, dateTo: null },
 };
 
-const statuses = [
-  { value: 'new', label: 'Новая' },
-  { value: 'active', label: 'В работе' },
-  { value: 'done', label: 'Завершена' },
-];
-
-const categories = [
-  { value: 'planned', label: 'Плановая' },
-  { value: 'incoming', label: 'Входящая' },
-];
+const options = (values: string[]) => values.map((value) => ({ value, label: value }));
+const riskOptions = Object.entries(riskLabels).map(([value, label]) => ({ value, label }));
+const applicantOptions = options(['Сотрудник', 'Внешний кандидат']);
+const officeOptions = options(offices);
+const examinerOptions = options(examiners);
 
 export function DemoFilters({ onApply }: { onApply: (filters: DemoFilterValues) => void }) {
   const [draft, setDraft] = useState(emptyFilters);
-  const { query, status, category, period, activeOnly } = draft;
 
   function reset() {
     setDraft(emptyFilters);
@@ -51,19 +42,20 @@ export function DemoFilters({ onApply }: { onApply: (filters: DemoFilterValues) 
     }}>
       <div className={cn.filterFields}>
         <Flex direction={FlexDirection.COLUMN} alignItems={FlexAlign.STRETCH} gap={16}>
-          <TextInput label="Поиск" placeholder="Введите запрос" size={TextInputSize.S}
-            value={query} onChange={(event) => setDraft({ ...draft, query: event.target.value })} isFullWidth />
-          <Select label="Статус" placeholder="Любой статус" options={statuses} value={status}
-            isFullWidth isFullWidthMenu onChange={(value) => setDraft({ ...draft, status: String(value) })} />
-          <Select label="Категория" placeholder="Любая категория" options={categories} value={category}
-            isFullWidth isFullWidthMenu onChange={(value) => setDraft({ ...draft, category: String(value) })} />
-          <DatepickerInterval label="Период" size={TextInputSize.S} isFullWidth
-            selectedInterval={period} onChange={(value) => setDraft({ ...draft, period: value })} />
-          <Flex justifyContent={FlexJustify.START}>
-            <Checkbox isChecked={activeOnly} onChange={({ isChecked }) => setDraft({ ...draft, activeOnly: isChecked })}>
-              Только активные
-            </Checkbox>
-          </Flex>
+          <Select label="Факторы риска" placeholder="Все значения" options={riskOptions} value={draft.risk}
+            mode={SelectMode.MULTI} isFullWidth isFullWidthMenu
+            onChange={(value) => setDraft({ ...draft, risk: Array.isArray(value) ? value : [] })} />
+          <Select label="Тип заявителя" placeholder="Любой тип" options={applicantOptions} value={draft.applicant}
+            mode={SelectMode.MULTI} isFullWidth isFullWidthMenu
+            onChange={(value) => setDraft({ ...draft, applicant: Array.isArray(value) ? value : [] })} />
+          <Select label="Место тестирования" placeholder="Любой офис" options={officeOptions} value={draft.office}
+            mode={SelectMode.MULTI} isFullWidth isFullWidthMenu
+            onChange={(value) => setDraft({ ...draft, office: Array.isArray(value) ? value : [] })} />
+          <Select label="Полиграфолог" placeholder="Любой специалист" options={examinerOptions} value={draft.examiner}
+            isAllowClear isFullWidth isFullWidthMenu
+            onChange={(value) => setDraft({ ...draft, examiner: String(value) })} />
+          <DatepickerInterval label="Дата тестирования" size={TextInputSize.S} isFullWidth
+            selectedInterval={draft.period} onChange={(value) => setDraft({ ...draft, period: value })} />
         </Flex>
       </div>
       <footer className={cn.filterFooter}>

@@ -9,9 +9,11 @@
 
 .serviceGroup > :first-child:not(button) {
   margin: 2px 9px 6px;
+  justify-self: start;
 }
 
 .serviceGroup > button[aria-label] {
+  font-weight: 400;
   justify-content: flex-start;
   min-inline-size: 0;
   border-radius: 8px;
@@ -37,11 +39,19 @@
 
 .serviceList[data-collapsed='true'] .menuLabel { opacity: 0; }
 
-.registry { container-type: inline-size; }
+.registry {
+  container-type: inline-size;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  block-size: 100%;
+
+  &:has(.minimized) { grid-template-rows: auto minmax(0, 1fr); }
+}
 
 .registryGrid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   align-items: start;
   gap: 16px;
 
@@ -53,6 +63,9 @@
 .entryList {
   display: grid;
   align-content: start;
+  max-block-size: 100%;
+  overflow: auto;
+  scrollbar-width: thin;
   gap: 8px;
   min-inline-size: 0;
 }
@@ -72,21 +85,27 @@
   }
 }
 
-.entryMeta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+.entryFacts {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
   padding-inline: 9px;
 }
 
-.detail { min-inline-size: 0; }
+.detail {
+  min-inline-size: 0;
+  max-block-size: 100%;
+  overflow: auto;
+  scrollbar-width: thin;
+}
 
 .detailBody {
   display: grid;
   align-content: start;
   gap: 12px;
-  padding: clamp(16px, 2vw, 24px);
+  grid-template-columns: minmax(0, 1fr);
+  min-inline-size: 0;
+  padding: clamp(14px, 1.25vw, 22px);
   min-block-size: 320px;
 }
 
@@ -94,9 +113,8 @@
   display: grid;
   justify-items: start;
   gap: 5px;
-  border-block-start: 1px solid var(--OutlineDefault);
-  padding-block-start: 12px;
-  margin-block-start: 4px;
+  inline-size: 100%;
+  padding: 12px 14px;
 }
 
 .filterForm {
@@ -126,5 +144,70 @@
 }
 
 @container (max-width: 630px) {
-  .registryGrid[data-detail-open='true'] { grid-template-columns: minmax(0, 1fr); }
+  .registryGrid[data-detail-open='true'] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    overflow: auto;
+  }
+  .entryList, .detail { max-block-size: none; }
+}
+
+.serviceTitle {
+  display: flex;
+  min-inline-size: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.favoriteStar {
+  flex: none;
+  display: inline-flex;
+  color: #e2c477;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-inline-size: 0;
+  color: var(--TextAndIconsSecondary);
+}
+
+.registryToolbar {
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) minmax(0, 1fr);
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-inline-size: 0;
+}
+
+.minimized { margin-block-end: 12px; }
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 16px;
+  inline-size: 100%;
+  margin: 0;
+
+  dd { margin: 0; }
+}
+
+.riskTable {
+  inline-size: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: start;
+
+  th:first-child { inline-size: 53%; }
+  th:nth-child(2) { inline-size: 27%; }
+
+  :is(th, td) {
+    overflow-wrap: anywhere;
+    padding: 7px 6px 7px 0;
+    text-align: start;
+    border-block-end: 1px solid var(--OutlineDefault);
+  }
 }
