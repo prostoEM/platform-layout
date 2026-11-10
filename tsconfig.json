@@ -19,6 +19,12 @@
     "paths": {
       "@frontend/ui-kit": [
         "./dev/ui-kit.ts"
+      ],
+      "@frontend/icon": [
+        "./dev/iconPreview.tsx"
+      ],
+      "@frontend/tools": [
+        "./dev/toolsPreview.ts"
       ]
     }
   },

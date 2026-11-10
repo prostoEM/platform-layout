@@ -7,6 +7,8 @@ export const uiKitViteConfig: UserConfig = {
   resolve: {
     alias: {
       '@frontend/ui-kit': localPath('./ui-kit.ts'),
+      '@frontend/icon': localPath('./iconPreview.tsx'),
+      '@frontend/tools': localPath('./toolsPreview.ts'),
       '@frontend/styles': localPath('../local-ui-kit/ui-kit/src/lib/__styles__'),
       '@assets': localPath('../local-ui-kit/ui-kit/src/assets'),
     },

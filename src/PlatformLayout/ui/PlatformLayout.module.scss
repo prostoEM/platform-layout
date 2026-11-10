@@ -1,29 +1,31 @@
 .layout {
-  --_platform-gutter: clamp(16px, 1.5vw, 26px);
-  --_platform-rail: var(--platform-navigation-width, 228px);
-  --_platform-panel: var(--platform-panel-width, 300px);
+  --platform-gutter: 16px;
+  --platform-rail: 228px;
+  --platform-panel: 328px;
+  --platform-panel-column: 0px;
+  --platform-motion-duration: 220ms;
+  --platform-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
 
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: var(--_platform-rail) minmax(0, 1fr);
+  grid-template-columns: var(--platform-rail) minmax(0, 1fr) var(--platform-panel-column);
   grid-template-rows: auto minmax(0, 1fr);
   block-size: var(--platform-layout-height, 100dvh);
-  max-inline-size: 2048px;
   min-inline-size: 0;
-  margin-inline: auto;
+  padding: var(--platform-gutter);
   background: var(--BackgroundsDefault);
-  color: var(--TextAndIconsPrimary);
   font: var(--font-weight-normal) var(--font-size-14) / var(--line-height-20) SBSansText, sans-serif;
+  transition: grid-template-columns var(--platform-motion-duration) var(--platform-motion-easing);
 
   &[data-compact='true'] {
-    --_platform-rail: var(--platform-compact-width, 62px);
+    --platform-rail: 62px;
   }
 
   &[data-panel-open='true'] {
-    grid-template-columns: var(--_platform-rail) minmax(0, 1fr) var(--_platform-panel);
+    --platform-panel-column: calc(var(--platform-panel) + var(--platform-gutter));
   }
 
-  :where(button, [tabindex]):focus-visible {
+  :where(main):focus-visible {
     outline: 2px solid var(--FocusOutlinePrimary);
     outline-offset: -2px;
   }
@@ -33,91 +35,58 @@
   grid-area: 1 / 1 / -1 / 2;
   min-inline-size: 0;
   min-block-size: 0;
+}
+
+.navigationSurface {
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
-  gap: 8px;
-  padding: 15px 9px 10px;
-  background: var(--SurfaceTransparent01);
-  border-inline-end: 1px solid var(--OutlineDefault);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  box-sizing: border-box;
+  block-size: 100%;
+  min-inline-size: 0;
+  padding: 12px 8px 8px;
+  gap: 16px;
+  overflow: clip;
 }
 
 .brand {
-  align-content: center;
-  min-block-size: 36px;
-  max-inline-size: 110px;
-  padding-inline: 4px;
-  color: var(--TextAndIconsPrimary);
-  font-size: var(--font-size-12);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-16);
-  overflow-wrap: anywhere;
-
-  abbr {
-    text-decoration: none;
-  }
-}
-
-.layout .control {
-  min-block-size: 32px;
-  min-inline-size: 32px;
-  max-inline-size: 100%;
-  justify-self: start;
+  display: flex;
   align-items: center;
-  padding: 4px 8px;
-  border: 1px solid var(--OutlineDefault);
-  border-radius: 6px;
-  background: var(--ButtonSecondary);
-  font-size: var(--font-size-12);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-16);
+  gap: 10px;
+  min-block-size: 40px;
+  padding-inline: 10px;
+  color: var(--TextAndIconsPrimary);
 
-  &:hover,
-  &[aria-expanded='true'] {
-    background: var(--ButtonSecondaryHover);
-  }
+  > :first-child { flex: none; }
 }
 
-.layout[data-compact='true'] .navigation {
-  padding-inline: 6px;
+.brandLabel {
+  min-inline-size: 145px;
+  opacity: 1;
+  transition: opacity var(--platform-motion-duration) var(--platform-motion-easing);
+}
 
-  .brand,
-  .control {
-    justify-self: center;
-  }
+.layout[data-compact='true'] .brandLabel {
+  opacity: 0;
+}
 
-  .control {
-    padding-inline: 4px;
-  }
+.navigationActions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .header {
   grid-area: 1 / 2 / 2 / -1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
   min-inline-size: 0;
-  gap: 8px 16px;
-  padding: 15px var(--_platform-gutter) 13px;
-
-  h1 {
-    flex: 1 1 12rem;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    min-inline-size: 0;
-    margin: 0;
-    overflow: hidden;
-    font: var(--font-weight-semibold) var(--font-size-24) / var(--line-height-28) SBSansDisplay, sans-serif;
-    letter-spacing: var(--letter-spacing--5);
-    overflow-wrap: anywhere;
-  }
+  padding: 0 0 var(--platform-gutter) var(--platform-gutter);
 }
 
-.actions {
+.heading > :first-child {
+  flex: 1 1 12rem;
   min-inline-size: 0;
-  max-inline-size: 100%;
-  margin-inline-start: auto;
+}
+
+.toolbar {
+  margin-block-start: 12px;
 }
 
 .navigationBody,
@@ -131,48 +100,57 @@
   overflow-wrap: anywhere;
 }
 
+.navigationBody { overflow-x: hidden; }
+
 .content {
   grid-area: 2 / 2 / 3 / 3;
-  padding: 2px var(--_platform-gutter) 22px;
+  margin-inline-start: var(--platform-gutter);
 }
 
 .rightPanel {
-  box-sizing: border-box;
   grid-area: 2 / 3 / 3 / 4;
   min-inline-size: 0;
   min-block-size: 0;
-  margin: 2px var(--_platform-gutter) 22px 0;
-  border: 1px solid var(--OutlineDefault);
-  border-radius: 8px;
-  background: var(--SurfaceTransparent01);
+  overflow: clip;
+  visibility: hidden;
+  transition: visibility 0s var(--platform-motion-duration);
+}
 
-  &:not([hidden]) {
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
+.panelSurface {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  inline-size: var(--platform-panel);
+  block-size: 100%;
+  margin-inline-start: var(--platform-gutter);
+  padding: 16px;
+  opacity: 0;
+  translate: 12px 0;
+  transition:
+    opacity var(--platform-motion-duration) var(--platform-motion-easing),
+    translate var(--platform-motion-duration) var(--platform-motion-easing);
+}
+
+.layout[data-panel-open='true'] {
+  .rightPanel {
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .panelSurface {
+    opacity: 1;
+    translate: 0;
   }
 }
 
 .panelHeader {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
+  align-items: center;
   gap: 8px;
-  padding: 10px;
-  border-block-end: 1px solid var(--OutlineDefault);
-
-  h2 {
-    margin: 5px 0 0;
-    font: inherit;
-    font-weight: var(--font-weight-semibold);
-    overflow-wrap: anywhere;
-    min-inline-size: 0;
-  }
-
-  button {
-    flex: none;
-  }
+  padding-block-end: 12px;
 }
 
-.panelBody {
-  padding: 10px;
+@media (prefers-reduced-motion: reduce) {
+  .layout { --platform-motion-duration: 0ms; }
 }

@@ -1,80 +1,104 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 
-import { NativeButton } from '@frontend/ui-kit';
+import { Icon } from '@frontend/icon';
+import {
+  ButtonState, ButtonType, Flex, FlexAlign, FlexDirection, FlexJustify,
+  H, Surface, SurfaceBackground, Text, TypographyType,
+} from '@frontend/ui-kit';
 
 import { PlatformLayout } from '../PlatformLayout';
+import { AccessibleButton } from '../PlatformLayout/ui/AccessibleButton.ui';
+import { DemoFilters } from './DemoFilters';
 import cn from './LayoutDemo.module.scss';
 
+const products = {
+  spfi: { label: 'СПФИ', icon: 'ic_18_calendar', hasFilters: true },
+  profile: { label: 'Профиль благонадёжности', icon: 'ic_24_user', hasFilters: false },
+  incidents: { label: 'Инциденты', icon: 'ic_16_alert_triangle', hasFilters: true },
+  tasks: { label: 'Задачи', icon: 'ic_18_check', hasFilters: false },
+} as const;
+
+type Product = keyof typeof products;
+const productIds = Object.keys(products) as Product[];
+
 export interface LayoutDemoProps {
+  brandIcon: ReactNode;
+  filterIcon: ReactNode;
+  initialProduct?: Product;
   defaultNavigationCollapsed?: boolean;
-  withRightPanel?: boolean;
   defaultRightPanelOpen?: boolean;
   longContent?: boolean;
 }
 
 export function LayoutDemo({
+  brandIcon,
+  filterIcon,
+  initialProduct = 'spfi',
   defaultNavigationCollapsed = false,
-  withRightPanel = false,
   defaultRightPanelOpen = false,
   longContent = false,
 }: LayoutDemoProps) {
-  const [showLabels, setShowLabels] = useState(true);
+  const [product, setProduct] = useState(initialProduct);
+  const [panelOpen, setPanelOpen] = useState(defaultRightPanelOpen);
+  const [appliedCount, setAppliedCount] = useState(0);
+  const { label, hasFilters } = products[product];
+
+  function selectProduct(next: Product) {
+    if (product === next) return;
+    setProduct(next);
+    setPanelOpen(false);
+    setAppliedCount(0);
+  }
 
   return (
     <PlatformLayout
-      key={`${defaultNavigationCollapsed}-${defaultRightPanelOpen}-${withRightPanel}`}
-      title={longContent
-        ? 'Рабочая область с длинным заголовком для проверки переноса рядом с открытой панелью'
-        : 'Рабочая область'}
+      title={label}
       defaultNavigationCollapsed={defaultNavigationCollapsed}
-      defaultRightPanelOpen={defaultRightPanelOpen}
-      actions={
-        <>
-          <span className={cn.demo}>Демонстрация</span>
-          <NativeButton className={cn.action} aria-pressed={showLabels}
-            onClick={() => setShowLabels(!showLabels)}>
-            Подписи областей
-          </NativeButton>
-        </>
-      }
+      actions={appliedCount > 0 && <Text type={TypographyType.SECONDARY}>Условий: {appliedCount}</Text>}
       navigation={{
-        expanded: (
-          <div className={`${cn.placeholder} ${cn.left}`}>
-            {showLabels && (
-              <>
-                <strong>Левая область</strong>
-                <span>Слот навигации</span>
-              </>
-            )}
+        brand: { label: 'Внутренняя безопасность', icon: brandIcon },
+        expandIcon: <Icon iconName="ic_18_chevron_right" />,
+        collapseIcon: <Icon iconName="ic_18_chevron_left" />,
+        render: (collapsed) => (
+          <div className={cn.menu} data-collapsed={collapsed}>
+            {productIds.map((id) => (
+              <AccessibleButton
+                key={id}
+                type={ButtonType.TRANSPARENT}
+                state={product === id ? ButtonState.SELECTED : ButtonState.NORMAL}
+                accessibleLabel={products[id].label}
+                current={product === id}
+                iconLeft={<Icon iconName={products[id].icon} />}
+                onClick={() => selectProduct(id)}
+                isFullWidth
+              >
+                <span className={cn.menuLabel}>{products[id].label}</span>
+              </AccessibleButton>
+            ))}
           </div>
         ),
       }}
-      rightPanel={withRightPanel ? {
+      rightPanel={hasFilters ? {
         title: 'Фильтры',
-        content: (
-          <div className={`${cn.placeholder} ${cn.panel}`}>
-            {showLabels && (
-              <>
-                <strong>Правая область</strong>
-                <span>Слот для будущих фильтров</span>
-              </>
-            )}
-          </div>
-        ),
+        trigger: { label: 'Фильтры', icon: filterIcon },
+        closeIcon: <Icon iconName="ic_18_close_medium" />,
+        content: <DemoFilters key={product} onApply={setAppliedCount} />,
+        isOpen: panelOpen,
+        onOpenChange: setPanelOpen,
       } : undefined}
     >
-      <div className={`${cn.placeholder} ${cn.center}`}>
-        {showLabels && (
-          <>
-            <strong>Центральная область</strong>
-            <span>Слот для контента продукта</span>
-          </>
-        )}
-      </div>
+      <Surface className={cn.center} background={SurfaceBackground.TRANSPARENT1} borderRadius={16}>
+        <Flex className={cn.placeholder} direction={FlexDirection.COLUMN} alignItems={FlexAlign.CENTER}
+          justifyContent={FlexJustify.CENTER} gap={8}>
+          <H level={2}>Тут продукт</H>
+          <Text type={TypographyType.SECONDARY}>{label}</Text>
+        </Flex>
+      </Surface>
       {longContent && (
-        <div className={`${cn.placeholder} ${cn.stress}`}>
-          Блок 1200 × 920 px для проверки прокрутки центральной области
-        </div>
+        <Surface className={cn.stress} background={SurfaceBackground.TRANSPARENT1} borderRadius={16}>
+          <Text>Широкий блок для проверки прокрутки</Text>
+        </Surface>
       )}
     </PlatformLayout>
   );
