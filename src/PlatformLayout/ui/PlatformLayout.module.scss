@@ -39,6 +39,7 @@
 
 .navigationSurface {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr) auto;
   box-sizing: border-box;
   block-size: 100%;
